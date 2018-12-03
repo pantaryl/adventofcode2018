@@ -10,6 +10,7 @@ class Claim:
         self.width = int(width)
         self.height = int(height)
 
+# Read in the claims
 claims = []
 with open("../input/day3input.txt", 'r') as inputFile:
     lines = inputFile.readlines()
@@ -17,30 +18,29 @@ with open("../input/day3input.txt", 'r') as inputFile:
         claims.append(Claim(line))
 
 fabric = {}
+
+# Part One
 for claim in claims:
     for x in range(claim.x, claim.x+claim.width):
-        if x not in fabric:
-            fabric[x] = {}
         for y in range(claim.y, claim.y+claim.height):
-            if y not in fabric[x]:
-                fabric[x][y] = []
-            fabric[x][y].append(claim.id)
+            if (x,y) not in fabric:
+                fabric[(x,y)] = []
+            fabric[(x,y)].append(claim.id)
 
 moreThanOne = 0
-for x, row in fabric.items():
-    for y, value in row.items():
-        moreThanOne += 1 if len(value) > 1 else 0
+for coord, data in fabric.items():
+    moreThanOne += 1 if len(data) > 1 else 0
 
 print(moreThanOne)
 
+# Part Two
 for claim in claims:
     allForMe = True
     for x in range(claim.x, claim.x+claim.width):
-        if not allForMe: break
         for y in range(claim.y, claim.y+claim.height):
             if not allForMe: break
 
-            if len(fabric[x][y]) > 1 or fabric[x][y][0] != claim.id:
+            if len(fabric[(x,y)]) > 1 or fabric[(x,y)][0] != claim.id:
                 allForMe = False
                 break
 

@@ -12,7 +12,7 @@ class Claim:
 
 # Read in the claims
 claims = []
-with open("../input/day3input.txt", 'r') as inputFile:
+with open("../input/day3.txt", 'r') as inputFile:
     lines = inputFile.readlines()
     for line in lines:
         claims.append(Claim(line))

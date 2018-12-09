@@ -1,75 +1,50 @@
+from collections import deque, defaultdict
+
+def getScore(NumPlayers, MaxMarble):
+    nodes = deque([0])
+
+    currentPlayer = 1
+    scores = defaultdict(int)
+
+    for i in range(1, MaxMarble + 1):
+        if (i % 23) == 0:
+            nodes.rotate(7)
+            scores[currentPlayer] += i + nodes.pop()
+            nodes.rotate(-1)
+        else:
+            nodes.rotate(-1)
+            nodes.append(i)
+        currentPlayer = (currentPlayer + 1) % NumPlayers
+
+    return max(scores.values())
+
+# Example inputs.
+assert(getScore(9,  25)   == 32)
+assert(getScore(10, 1618) == 8317)
+assert(getScore(13, 7999) == 146373)
+assert(getScore(17, 1104) == 2764)
+assert(getScore(21, 6111) == 54718)
+assert(getScore(30, 5807) == 37305)
+
+from timeit import default_timer as timer
+import re
+
 with open("../input/day9.txt", 'r') as inputFile:
     data = inputFile.read()
 
-import re
 values = re.findall(r'\d+', data)
-
-class Node():
-    def __init__(self, id):
-        self.id = id
-        self.prev = None
-        self.next = None
-
-    def __repr__(self):
-        return str("{} {} {}".format(self.prev.id, self.id, self.next.id))
-
-def getScore(NumPlayers, MaxMarble):
-    nodes = {}
-    nodes[0] = Node(0)
-    nodes[1] = Node(1)
-    nodes[0].prev = nodes[1]
-    nodes[0].next = nodes[1]
-    nodes[1].prev = nodes[0]
-    nodes[1].next = nodes[0]
-
-    currentPlayer = 1
-    currentMarble = 1
-    nextMarble    = 2
-
-    scores = [0] * NumPlayers
-
-    while currentMarble <= MaxMarble:
-        if (nextMarble % 23) == 0:
-            scores[currentPlayer] += nextMarble
-
-            idx = currentMarble
-            for i in range(7):
-                idx = nodes[idx].prev.id
-
-            toRemove = nodes[idx]
-            scores[currentPlayer] += toRemove.id
-            nodes[toRemove.prev.id].next = nodes[toRemove.next.id]
-            nodes[toRemove.next.id].prev = nodes[toRemove.prev.id]
-
-            nodes.pop(toRemove.id)
-            currentMarble = toRemove.next.id
-        else:
-            newNode = Node(nextMarble)
-            nodes[nextMarble] = newNode
-
-            marble  = nodes[currentMarble].next
-            afterMarble = marble.next
-            marble.next = newNode
-            afterMarble.prev = newNode
-            newNode.prev = marble
-            newNode.next = afterMarble
-            currentMarble = nextMarble
-        currentPlayer = (currentPlayer + 1) % NumPlayers
-        nextMarble += 1
-
-    return max(scores)
-
-from timeit import default_timer as timer
+maxPlayers = int(values[0])
+lastMarble = int(values[1])
 
 # Part 1
 start = timer()
-print(getScore(int(values[0]), int(values[1])))
+print("Part1:", getScore(maxPlayers, lastMarble))
 end = timer()
 print("Part 1 Time (s): {:}".format(end - start))
 
 # Part 2
 start = timer()
-print(getScore(int(values[0]), int(values[1]) * 100))
+print("Part2:", getScore(maxPlayers, lastMarble * 100))
 end = timer()
 print("Part 2 Time (s): {:}".format(end - start))
 

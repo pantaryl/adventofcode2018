@@ -9,7 +9,7 @@ with open("../input/day10.txt", 'r') as inputFile:
 coordData = []
 for line in data:
     values = re.findall(r'(-?\d+)', line)
-    coordData.append((int(values[0]), -1*int(values[1]), int(values[2]), -1*int(values[3])))
+    coordData.append((int(values[0]), int(values[1]), int(values[2]), int(values[3])))
 
 counter  = 0
 lastSize = sys.maxsize
@@ -27,20 +27,25 @@ while True:
         counter += 1
         continue
 
-    minY = min(prevPlots, key=lambda x:x[1])[1]
-    maxY = max(prevPlots, key=lambda x:x[1])[1]
-    minX = min(prevPlots, key=lambda x:x[0])[0]
-    maxX = max(prevPlots, key=lambda x:x[0])[0]
-    yLen = abs(maxY - minY) + 1
-    xLen = abs(maxX - minX) + 1
-    rows = [['.' for x in range(xLen)] for y in range(yLen)]
+    sortedY = sorted(prevPlots, key=lambda x:x[1])
+    minY    = sortedY[0][1]
+    maxY    = sortedY[-1][1]
+
+    sortedX = sorted(prevPlots, key=lambda x:x[0])
+    minX    = sortedX[0][0]
+    maxX    = sortedX[-1][0]
+
+    yLen    = abs(maxY - minY) + 1
+    xLen    = abs(maxX - minX) + 1
+
+    rows    = [['.' for x in range(xLen)] for y in range(yLen)]
     for i in range(len(prevPlots)):
         rows[prevPlots[i][1]-minY][prevPlots[i][0]-minX] = "#"
 
     # Part 1
     print("Part 1: ")
-    for i in range(yLen - 1, -1, -1):
-        print("".join(rows[i]))
+    for row in rows:
+        print("".join(row))
 
     print()
 

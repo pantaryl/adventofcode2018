@@ -13,31 +13,29 @@ for line in data:
 
 counter  = 0
 lastSize = sys.maxsize
-prevPlotX = None
-prevPlotY = None
+prevPlots = None
 
 while True:
-    plotX = []
-    plotY = []
-    for coord in coordData:
-        plotX.append(coord[0] + (counter * coord[2]))
-        yCoord = coord[1] + (counter * coord[3])
-        plotY.append(yCoord)
+    plots = [(coord[0] + (counter * coord[2]), coord[1] + (counter * coord[3])) for coord in coordData]
 
-    if abs(max(plotY) - min(plotY)) < lastSize:
-        lastSize = abs(max(plotY) - min(plotY))
-        prevPlotX = plotX
-        prevPlotY = plotY
+    maxY = max(plots, key=lambda x:x[1])[1]
+    minY = min(plots, key=lambda x:x[1])[1]
+    size = abs(maxY - minY)
+    if size < lastSize:
+        lastSize  = size
+        prevPlots = plots
         counter += 1
         continue
 
-    minY = min(prevPlotY)
-    minX = min(prevPlotX)
-    yLen = abs(max(prevPlotY) - minY) + 1
-    xLen = abs(max(prevPlotX) - minX) + 1
+    minY = min(prevPlots, key=lambda x:x[1])[1]
+    maxY = max(prevPlots, key=lambda x:x[1])[1]
+    minX = min(prevPlots, key=lambda x:x[0])[0]
+    maxX = max(prevPlots, key=lambda x:x[0])[0]
+    yLen = abs(maxY - minY) + 1
+    xLen = abs(maxX - minX) + 1
     rows = [['.' for x in range(xLen)] for y in range(yLen)]
-    for i in range(len(prevPlotY)):
-        rows[prevPlotY[i]-minY][prevPlotX[i]-minX] = "#"
+    for i in range(len(prevPlots)):
+        rows[prevPlots[i][1]-minY][prevPlots[i][0]-minX] = "#"
 
     # Part 1
     print("Part 1: ")

@@ -7,35 +7,35 @@ grid = [[int("{:016d}".format((((x+10)*y)+serialNumber)*(x+10))[-3]) - 5 for x i
 
 scores = {}
 
-def findMaxSumSquare(size):
-    sums = []
-    for y in range(len(grid)):
-        sums.append([])
-        for x in range(len(grid)):
-            sums[-1].append(0)
+summedAreaTable = []
+for y in range(len(grid)):
+    summedAreaTable.append([])
+    for x in range(len(grid)):
+        summedAreaTable[-1].append(0)
 
-    sums[0][0] = grid[0][0]
+summedAreaTable[0][0] = grid[0][0]
+for x in range(1, len(grid)):
+    summedAreaTable[0][x] = grid[0][x] + summedAreaTable[0][x-1]
+for y in range(1, len(grid)):
+    summedAreaTable[y][0] = grid[y][0] + summedAreaTable[y-1][0]
+
+for y in range(1, len(grid)):
     for x in range(1, len(grid)):
-        sums[0][x] = grid[0][x] + sums[0][x-1]
-    for y in range(1, len(grid)):
-        sums[y][0] = grid[y][0] + sums[y-1][0]
+        summedAreaTable[y][x] = grid[y][x] + summedAreaTable[y-1][x] + summedAreaTable[y][x-1] - summedAreaTable[y-1][x-1]
 
-    for y in range(1, len(grid)):
-        for x in range(1, len(grid)):
-            sums[y][x] = grid[y][x] + sums[y-1][x] + sums[y][x-1] - sums[y-1][x-1]
-
+def findMaxSumSquare(size):
     maxSize = -sys.maxsize
     coord   = (0, 0)
     for y in range(0, len(grid)-size+1):
         for x in range(0, len(grid)-size+1):
-            mySum = sums[y][x]
+            mySum = summedAreaTable[y][x]
 
             if y - size >= 0:
-                mySum -= sums[y-size][x]
+                mySum -= summedAreaTable[y-size][x]
             if x - size >= 0:
-                mySum -= sums[y][x-size]
+                mySum -= summedAreaTable[y][x-size]
             if y - size >= 0 and x - size >= 0:
-                mySum += sums[y-size][x-size]
+                mySum += summedAreaTable[y-size][x-size]
 
             if mySum > maxSize:
                 maxSize = mySum

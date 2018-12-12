@@ -19,11 +19,15 @@ def runGens(part1, state):
     lastSums = deque([(0, 0)])
     i = 1
     while True:
-        # We need to handle the cases where there is a '#' in the first four characters.
-        # For speed, just add 4 '.''s to the front and back.
-        for j in range(4):
-            myState.appendleft((myState[0][0]-1, '.'))
-            myState.append((myState[-1][0]+1, '.'))
+        # If the first or last four characters have a pot in them, we need to add empty pots to the beginning and end of
+        # our row, respectively.
+        start = list([x[1] for x in itertools.islice(myState, 0, 4)])
+        end   = list([x[1] for x in itertools.islice(myState, len(myState) - 4, len(myState))])[::-1]
+        if '#' in start:
+            [myState.appendleft((myState[0][0]-1, '.')) for i in range(0, 4-start.index('#'))]
+        if '#' in end:
+            [myState.append((myState[-1][0]+1, '.')) for i in range(0, 4-end.index('#'))]
+        
         nextState = myState.copy()
 
         # For every space in our pot lineup, we want to check if it matches one of the codes.

@@ -15,7 +15,8 @@ def getSurrounding(point):
             (point[0] - 1, point[1] + 1), (point[0], point[1] + 1), (point[0] + 1, point[1] + 1)]
 
 def simulate(numSteps, data):
-    grid = generateInput(data)
+    period = 0
+    grid   = generateInput(data)
     changingScores = []
     scores = []
     for i in range(numSteps):
@@ -37,11 +38,14 @@ def simulate(numSteps, data):
         oldScore = sum([1 for point in grid     if grid[point]     == '|']) * sum([1 for point in grid     if grid[point]     == '#'])
         changingScores.append(newScore - oldScore)
         scores.append(newScore)
-        #print(i+1, newScore, newScore-oldScore)
-        grid = nextGrid
-        if len(changingScores) > 30 and changingScores[-1] == changingScores[-29] and changingScores[-2] == changingScores[-30]:
+
+        reveredScores = list(reversed(changingScores))[2:]
+        if changingScores[-1] in reveredScores and changingScores[-2] in reveredScores and (reveredScores.index(changingScores[-2]) - reveredScores.index(changingScores[-1]) == 1):
+            period = reveredScores.index(changingScores[-1]) + 2
             break
-    return grid, i+1, scores[-29:-1]
+
+        grid = nextGrid
+    return grid, i+1, scores[-(period+1):-1]
 
 # Part 1
 grid, _, __ = simulate(10, data)
